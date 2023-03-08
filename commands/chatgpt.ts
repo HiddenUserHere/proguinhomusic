@@ -1,5 +1,6 @@
 import { Message as MessageD } from "discord.js";
 import { config } from "../utils/config";
+import fetch from "node-fetch";
 
 
 class ChatGPTApi
@@ -24,7 +25,7 @@ class ChatGPTApi
             })
         });
 
-        const data = await res.json();
+        const data = await res.json() as any;
 
         return data.choices[0].message.content;
     }
