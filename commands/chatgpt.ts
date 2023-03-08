@@ -67,6 +67,8 @@ export default {
                     message.reply(current);
                 return;
             }
+
+            message.reply(res);
         }
         catch (error)
         {
