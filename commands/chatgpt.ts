@@ -2,7 +2,7 @@ import { Message as MessageD } from "discord.js";
 import { config } from "../utils/config";
 import fetch from "node-fetch";
 
-const MAX_BOT_HISTORY = 10 * 2;
+const MAX_BOT_HISTORY = 250 * 2;
 
 let historyBot: {role: string, content: string}[] = [];
 
