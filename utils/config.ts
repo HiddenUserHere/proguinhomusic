@@ -17,8 +17,9 @@ try {
     BUTTONS: process.env.BUTTONS === "true" ? true : false,
     HOST_IP: process.env.HOST_IP || "localhost",
     HOST_PORT: parseInt(process.env.HOST_PORT!) || 3000,
-    OPENAPI_EMAIL: process.env.OPENAPI_EMAIL || "",
-    OPENAPI_PASSWORD: process.env.OPENAPI_PASSWORD || "",
+    OPENAI_EMAIL: process.env.OPENAI_EMAIL || "",
+    OPENAI_PASSWORD: process.env.OPENAI_PASSWORD || "",
+    OPENAI_ACCESS_TOKEN: process.env.OPENAI_ACCESS_TOKEN || "",
   };
 }
 

@@ -9,6 +9,7 @@ export interface Config {
   BUTTONS: boolean;
   HOST_IP: string;
   HOST_PORT: number;
-  OPENAPI_EMAIL: string;
-  OPENAPI_PASSWORD: string;
+  OPENAI_EMAIL: string;
+  OPENAI_PASSWORD: string;
+  OPENAI_ACCESS_TOKEN: string;
 }
