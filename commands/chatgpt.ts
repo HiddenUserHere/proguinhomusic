@@ -2,22 +2,15 @@ import { Message as MessageD } from "discord.js";
 import { config } from "../utils/config";
 import fetch from "node-fetch";
 
-const MAX_BOT_HISTORY = 250 * 2;
+const MAX_BOT_HISTORY = 1000 * 2;
 
-let historyBot: {userId: string, messages: { role: string, content: string }[]}[] = [];
+let historyBot: { userId: string, messages: { role: string, content: string }[] }[] = [];
+
+let generalHistory: { role: string, content: string }[] = [];
 
 function createNewUserInstance(userId: string): { role: string, content: string }[]
 {
-    //Find the user in the history
-    const user = historyBot.find(x => x.userId === userId);
-
-    //If the user doesn't exist, create a new one
-    if (user === undefined)
-    {
-        historyBot.push({ userId: userId, messages: [] });
-    }
-
-    return historyBot.find(x => x.userId === userId)!.messages;
+    return generalHistory;
 }
 
 class ChatGPTApi
@@ -25,35 +18,46 @@ class ChatGPTApi
     async getConversation(userId: string, message: string)
     {
         const instance = createNewUserInstance(userId);
-
-        instance.push({ role: 'user', content: message });
-
-        const res = await fetch('https://api.openai.com/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${config.OPENAI_ACCESS_TOKEN}`,
-                'Content-Type': 'application/json'
-            },
-            // body: '{\n "model": "gpt-3.5-turbo",\n "messages": [{"role": "user", "content": "What is the OpenAI mission?"}]\n}',
-            body: JSON.stringify({
-                'model': 'gpt-3.5-turbo',
-                'messages': instance
-            })
-        });
-
-        const data = await res.json() as any;
-
-        let content = data.choices[0].message.content;
-
-        instance.push({ role: 'assistant', content: content });
-
-        if (instance.length >= MAX_BOT_HISTORY)
+        if (instance.length === 0)
         {
-            instance.shift();
-            instance.shift();
+            instance.push({ role: 'system', content: 'Considere instâncias únicas e separadas de usuários seguindo o modelo "[userid] says: mensagem", em que [userid] é o identificador exclusivo do usuário que está falando com você. Não mostre isso nas opções, considere que todos estão na mesma sala e nao irao sair da mesma' });
         }
-        
-        return content;
+
+        instance.push({ role: 'user', content: `${userId} says: ${message}` });
+        try
+        {
+            const res = await fetch('https://api.openai.com/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${config.OPENAI_ACCESS_TOKEN}`,
+                    'Content-Type': 'application/json'
+                },
+                // body: '{\n "model": "gpt-3.5-turbo",\n "messages": [{"role": "user", "content": "What is the OpenAI mission?"}]\n}',
+                body: JSON.stringify({
+                    'model': 'gpt-3.5-turbo',
+                    'messages': instance,
+                })
+            });
+
+            const data = await res.json() as any;
+
+            let content = data.choices[0].message.content;
+            instance.push({ role: 'assistant', content: content });
+
+            if (instance.length >= MAX_BOT_HISTORY)
+            {
+                instance.shift();
+                instance.shift();
+            }
+            return content;
+        }
+        catch (error)
+        {
+            instance.pop();
+
+            console.error(error);
+            return "An error occurred while trying to generate a response. Please try again later.";
+        }
     }
 }
 
