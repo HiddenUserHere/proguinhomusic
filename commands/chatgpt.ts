@@ -4,13 +4,29 @@ import fetch from "node-fetch";
 
 const MAX_BOT_HISTORY = 250 * 2;
 
-let historyBot: {role: string, content: string}[] = [];
+let historyBot: {userId: string, messages: { role: string, content: string }[]}[] = [];
+
+function createNewUserInstance(userId: string): { role: string, content: string }[]
+{
+    //Find the user in the history
+    const user = historyBot.find(x => x.userId === userId);
+
+    //If the user doesn't exist, create a new one
+    if (user === undefined)
+    {
+        historyBot.push({ userId: userId, messages: [] });
+    }
+
+    return historyBot.find(x => x.userId === userId)!.messages;
+}
 
 class ChatGPTApi
 {
-    async getConversation(message: string)
+    async getConversation(userId: string, message: string)
     {
-        historyBot.push({ role: 'user', content: message });
+        const instance = createNewUserInstance(userId);
+
+        instance.push({ role: 'user', content: message });
 
         const res = await fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',
@@ -21,7 +37,7 @@ class ChatGPTApi
             // body: '{\n "model": "gpt-3.5-turbo",\n "messages": [{"role": "user", "content": "What is the OpenAI mission?"}]\n}',
             body: JSON.stringify({
                 'model': 'gpt-3.5-turbo',
-                'messages': historyBot
+                'messages': instance
             })
         });
 
@@ -29,12 +45,12 @@ class ChatGPTApi
 
         let content = data.choices[0].message.content;
 
-        historyBot.push({ role: 'assistant', content: content });
+        instance.push({ role: 'assistant', content: content });
 
-        if (historyBot.length >= MAX_BOT_HISTORY)
+        if (instance.length >= MAX_BOT_HISTORY)
         {
-            historyBot.shift();
-            historyBot.shift();
+            instance.shift();
+            instance.shift();
         }
         
         return content;
@@ -55,7 +71,7 @@ export default {
             const chat = new ChatGPTApi();
 
             //Get the response
-            const res = await chat.getConversation(text);
+            const res = await chat.getConversation(message.author.id, text);
         
             //Split the response into multiple messages if it's more than 4000 characters
             if (res.length > 2000)
