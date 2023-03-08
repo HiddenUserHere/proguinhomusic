@@ -47,8 +47,25 @@ export default {
             //Get the response
             const res = await chat.getConversation(text);
         
-            //Send the response
-            message.reply(res);
+            //Split the response into multiple messages if it's more than 4000 characters
+            if (res.length > 4000)
+            {
+                const split = res.split("\n");
+                let current = "";
+                for (let i = 0; i < split.length; i++)
+                {
+                    if (current.length + split[i].length > 4000)
+                    {
+                        message.reply(current);
+                        current = "";
+                    }
+
+                    current += split[i] + "\n";
+                }
+
+                message.reply(current);
+                return;
+            }
         }
         catch (error)
         {
