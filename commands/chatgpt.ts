@@ -2,11 +2,16 @@ import { Message as MessageD } from "discord.js";
 import { config } from "../utils/config";
 import fetch from "node-fetch";
 
+const MAX_BOT_HISTORY = 10 * 2;
+
+let historyBot: {role: string, content: string}[] = [];
 
 class ChatGPTApi
 {
     async getConversation(message: string)
     {
+        historyBot.push({ role: 'user', content: message });
+
         const res = await fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',
             headers: {
@@ -16,18 +21,23 @@ class ChatGPTApi
             // body: '{\n "model": "gpt-3.5-turbo",\n "messages": [{"role": "user", "content": "What is the OpenAI mission?"}]\n}',
             body: JSON.stringify({
                 'model': 'gpt-3.5-turbo',
-                'messages': [
-                    {
-                        'role': 'user',
-                        'content': message
-                    }
-                ]
+                'messages': historyBot
             })
         });
 
         const data = await res.json() as any;
 
-        return data.choices[0].message.content;
+        let content = data.choices[0].message.content;
+
+        historyBot.push({ role: 'assistant', content: content });
+
+        if (historyBot.length >= MAX_BOT_HISTORY)
+        {
+            historyBot.shift();
+            historyBot.shift();
+        }
+        
+        return content;
     }
 }
 
