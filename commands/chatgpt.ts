@@ -1,39 +1,6 @@
 import { Message as MessageD } from "discord.js";
 import { config } from "../utils/config";
-import { v4 as uuidv4 } from 'uuid';
 
-import Authenticator from 'openai-token';
-
-export interface Content
-{
-    content_type: string;
-    parts: string[];
-}
-
-export interface Message
-{
-    content: Content;
-    id: string;
-    role: string;
-}
-
-export interface ConversationPayload
-{
-    action: string;
-    conversation_id?: string;
-    messages: Message[];
-    model: string;
-    parent_message_id: string;
-}
-
-export const getSession = async () =>
-{
-    const auth = new Authenticator(config.OPENAI_EMAIL, config.OPENAI_PASSWORD);
-    await auth.begin();
-    const token = await auth.getAccessToken();
-
-    return token;
-};
 
 class ChatGPTApi
 {
