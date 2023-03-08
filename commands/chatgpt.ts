@@ -24,6 +24,15 @@ class ChatGPTApi
         }
 
         instance.push({ role: 'user', content: `${userId} says: ${message}` });
+        instance.push({ role: 'assistant', content: '' });
+        if (instance.length >= MAX_BOT_HISTORY)
+        {
+            instance.shift();
+            instance.shift();
+        }
+
+        let lastInstanceIndex = instance.length - 1;
+
         try
         {
             const res = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -44,24 +53,16 @@ class ChatGPTApi
             let content = data.choices[0].message.content;
 
             if (data.choices && data.choices.length > 0)
-                instance.push({ role: 'assistant', content: content });
+                instance[lastInstanceIndex] = { role: 'assistant', content: content };
             else
             {
                 content = "An error occurred while trying to generate a response. Please try again later.";
-                instance.pop();
             }
 
-            if (instance.length >= MAX_BOT_HISTORY)
-            {
-                instance.shift();
-                instance.shift();
-            }
             return content;
         }
         catch (error)
         {
-            instance.pop();
-
             console.error(error);
             return "An error occurred while trying to generate a response. Please try again later.";
         }
