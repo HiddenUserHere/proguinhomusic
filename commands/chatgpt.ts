@@ -63,7 +63,8 @@ export default {
                     current += split[i] + "\n";
                 }
 
-                message.reply(current);
+                if (current.length > 0)
+                    message.reply(current);
                 return;
             }
         }
