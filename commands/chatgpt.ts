@@ -42,7 +42,14 @@ class ChatGPTApi
             const data = await res.json() as any;
 
             let content = data.choices[0].message.content;
-            instance.push({ role: 'assistant', content: content });
+
+            if (data.choices && data.choices.length > 0)
+                instance.push({ role: 'assistant', content: content });
+            else
+            {
+                content = "An error occurred while trying to generate a response. Please try again later.";
+                instance.pop();
+            }
 
             if (instance.length >= MAX_BOT_HISTORY)
             {
