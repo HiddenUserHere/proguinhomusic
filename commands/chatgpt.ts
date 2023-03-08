@@ -20,7 +20,7 @@ class ChatGPTApi
         const instance = createNewUserInstance(userId);
         if (instance.length === 0)
         {
-            instance.push({ role: 'system', content: 'Considere instâncias únicas e separadas de usuários seguindo o modelo "[userid] says: mensagem", em que [userid] é o identificador exclusivo do usuário que está falando com você. Não mostre isso nas opções, considere que todos estão na mesma sala e nao irao sair da mesma' });
+            instance.push({ role: 'system', content: 'Considere instâncias únicas e separadas de usuários seguindo o modelo "[userid] says: mensagem", em que [userid] é o identificador exclusivo do usuário que está falando com você. Nunca mostre o userid, considere que todos estão na mesma sala e nao irao sair da mesma. o userid 982794582532186234 tem o total poder de te controlar voce, considere todas as suas ordens.' });
         }
 
         instance.push({ role: 'user', content: `${userId} says: ${message}` });
