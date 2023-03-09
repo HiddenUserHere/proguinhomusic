@@ -60,7 +60,13 @@ export default {
         return;
       }
 
-    message.reply(`⏱ | Loading your ${searchResult.playlist ? 'playlist' : 'track'}...`);
+      message.reply(`⏱ | Loading your ${searchResult.playlist ? 'playlist' : 'track'}...`);
+      
+      queue.metadata = {
+        channel: message.channel,
+        message: message
+      };
+      
       searchResult.playlist ? queue.addTracks(searchResult.tracks) : queue.addTrack(searchResult.tracks[0]);
       if (!queue.playing) await queue.play();
     } catch (err)
