@@ -83,7 +83,7 @@ export function createEvents(player: Player)
                 //Powered by Pancake Host
                 {
                     "name": "\u200B",
-                    "value": `Powered by [Pancake Host](https://www.pancakehost.com/)`,
+                    "value": `Powered by [PancakeHost.com](https://www.pancakehost.com/)`,
                 }
             ],
             "thumbnail": {
