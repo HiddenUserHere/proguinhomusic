@@ -2,6 +2,7 @@ import { Message } from "discord.js";
 import { bot } from "..";
 import { i18n } from "../utils/i18n";
 
+
 export default {
   name: "move",
   aliases: ["mv"],

@@ -1,4 +1,5 @@
 import { Message, EmbedBuilder } from "discord.js";
+import fetch from "node-fetch";
 
 function zeroPad(num: number, places: number) {
   return String(num).padStart(places, "0");

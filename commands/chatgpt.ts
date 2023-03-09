@@ -79,43 +79,47 @@ export default {
     aliases: ['c'],
     async execute(message: MessageD, args: string[])
     {
-        try
-        {
-            //Join the arguments into a single string
-            const text = args.join(" ");
+        message.reply("This command is currently disabled due to the high cost of the API. Please try again later.");
+        return;
 
-            const chat = new ChatGPTApi();
+        //     try
+        //     {
+        //         //Join the arguments into a single string
+        //         const text = args.join(" ");
 
-            //Get the response
-            const res = await chat.getConversation(message.author.id, text);
+        //         const chat = new ChatGPTApi();
+
+        //         //Get the response
+        //         const res = await chat.getConversation(message.author.id, text);
         
-            //Split the response into multiple messages if it's more than 4000 characters
-            if (res.length > 2000)
-            {
-                const split = res.split("\n");
-                let current = "";
-                for (let i = 0; i < split.length; i++)
-                {
-                    if (current.length + split[i].length > 2000)
-                    {
-                        message.reply(current);
-                        current = "";
-                    }
+        //         //Split the response into multiple messages if it's more than 4000 characters
+        //         if (res.length > 2000)
+        //         {
+        //             const split = res.split("\n");
+        //             let current = "";
+        //             for (let i = 0; i < split.length; i++)
+        //             {
+        //                 if (current.length + split[i].length > 2000)
+        //                 {
+        //                     message.reply(current);
+        //                     current = "";
+        //                 }
 
-                    current += split[i] + "\n";
-                }
+        //                 current += split[i] + "\n";
+        //             }
 
-                if (current.length > 0)
-                    message.reply(current);
-                return;
-            }
+        //             if (current.length > 0)
+        //                 message.reply(current);
+        //             return;
+        //         }
 
-            message.reply(res);
-        }
-        catch (error)
-        {
-            console.error(error);
-            message.reply("An error occurred while trying to generate a response. Please try again later.");
-        }
+        //         message.reply(res);
+        //     }
+        //     catch (error)
+        //     {
+        //         console.error(error);
+        //         message.reply("An error occurred while trying to generate a response. Please try again later.");
+        //     }
+        // }
     }
 };
