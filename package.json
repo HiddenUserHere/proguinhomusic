@@ -38,6 +38,7 @@
     "https-proxy-agent": "^5.0.1",
     "lyrics-finder": "^21.7.0",
     "node-fetch": "^2.6.9",
+    "@types/node-fetch": "^2.6.2",
     "nodemon": "^2.0.21",
     "string-progressbar": "^1.0.4",
     "ts-node": "^10.9.1",
@@ -47,7 +48,6 @@
   "devDependencies": {
     "@types/express": "^4.17.17",
     "@types/node": "^18.14.5",
-    "@types/node-fetch": "^2.6.2",
     "cz-conventional-changelog": "^3.3.0",
     "isomorphic-unfetch": "^4.0.2",
     "spdl-core": "^2.0.2"
