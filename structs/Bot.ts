@@ -5,7 +5,6 @@ import { join } from "path";
 import { Command } from "../interfaces/Command";
 import { checkPermissions } from "../utils/checkPermissions";
 import { config } from "../utils/config";
-import { i18n } from "../utils/i18n";
 import { MissingPermissionsException } from "../utils/MissingPermissionsException";
 import { createEvents } from "./events";
 import { onSearchType } from "../commands/search";
@@ -93,7 +92,7 @@ export class Bot {
 
         if (now < expirationTime) {
           const timeLeft = (expirationTime - now) / 1000;
-          return message.reply(i18n.__mf("common.cooldownMessage", { time: timeLeft.toFixed(1), name: command.name }));
+          return message.reply(`Please wait ${timeLeft.toFixed(1)} more second(s) before reusing the \`${command.name}\` command.`);
         }
       }
 
@@ -115,8 +114,6 @@ export class Bot {
         if (error.message.includes("permissions")) {
           message.reply(error.toString()).catch(console.error);
         } else {
-          //message.reply(i18n.__("common.errorCommand")).catch(console.error);
-
           message.reply("An error occurred while executing this command!");
         }
       }

@@ -1,12 +1,10 @@
 import { Message } from "discord.js";
 import { bot } from "..";
-import { i18n } from "../utils/i18n";
-
 
 export default {
   name: "move",
   aliases: ["mv"],
-  description: i18n.__("move.description"),
+  description: "Move a music in the queue",
   execute(message: Message, args: number[])
   {
     

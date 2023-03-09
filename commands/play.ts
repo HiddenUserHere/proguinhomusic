@@ -1,13 +1,12 @@
 import { QueryType } from "discord-player";
 import { Message, PermissionFlagsBits } from "discord.js";
 import { bot } from "../index";
-import { i18n } from "../utils/i18n";
 
 export default {
   name: "play",
   cooldown: 3,
   aliases: ["p"],
-  description: i18n.__("play.description"),
+  description: "Play a music",
   permissions: [PermissionFlagsBits.Connect, PermissionFlagsBits.Speak, PermissionFlagsBits.AddReactions, PermissionFlagsBits.ManageMessages],
   async execute(message: Message, args: string[])
   {

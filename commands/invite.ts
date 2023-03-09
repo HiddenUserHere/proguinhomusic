@@ -1,9 +1,8 @@
 import { Message } from "discord.js";
-import { i18n } from "../utils/i18n";
 
 export default {
   name: "invite",
-  description: i18n.__("invite.description"),
+  description: "Invite the bot to your server",
   execute(message: Message) {
     return message
       .member!.send(

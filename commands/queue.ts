@@ -1,8 +1,5 @@
 import { Message, EmbedBuilder, Embed, EmbedType, TextChannel } from "discord.js";
-import { splitBar } from "string-progressbar";
-import { i18n } from "../utils/i18n";
 import { bot } from "../index";
-import { Queue } from "discord-player";
 
 function zeroPad(nr: number, base: number)
 {

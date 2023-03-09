@@ -1,17 +1,16 @@
 import { Message, EmbedBuilder } from "discord.js";
-import { i18n } from "../utils/i18n";
 import { bot } from "../index";
 
 export default {
   name: "help",
   aliases: ["h"],
-  description: i18n.__("help.description"),
+  description: "Shows the help menu",
   execute(message: Message) {
     let commands = bot.commands;
 
     let helpEmbed = new EmbedBuilder()
-      .setTitle(i18n.__mf("help.embedTitle", { botname: message.client.user!.username }))
-      .setDescription(i18n.__("help.embedDescription"))
+      .setTitle("Help")
+      .setDescription("Here is the list of all the commands")
       .setColor("#F8AA2A");
 
     commands.forEach((cmd) =>

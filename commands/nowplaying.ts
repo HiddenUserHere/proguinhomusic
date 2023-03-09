@@ -1,6 +1,4 @@
 import { Message, EmbedBuilder, Embed, EmbedType } from "discord.js";
-import { splitBar } from "string-progressbar";
-import { i18n } from "../utils/i18n";
 import { bot } from "../index";
 import { Queue } from "discord-player";
 
@@ -13,7 +11,7 @@ function zeroPad(nr: number, base: number)
 export default {
   name: "np",
   cooldown: 10,
-  description: i18n.__("nowplaying.description"),
+  description: "Shows the current song",
   execute(message: Message)
   {
     const song = bot.player.getQueue(message.guild!.id)!.nowPlaying();
