@@ -79,6 +79,11 @@ export function createEvents(player: Player)
                     "name": "\u200B",
                     "value": `Requested by <@${song.requestedBy.id}>`,
                     "inline": true
+                },
+                //Powered by Pancake Host
+                {
+                    "name": "\u200B",
+                    "value": `Powered by [Pancake Host](https://www.pancakehost.com/)`,
                 }
             ],
             "thumbnail": {

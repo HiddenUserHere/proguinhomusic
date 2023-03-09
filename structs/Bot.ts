@@ -30,7 +30,7 @@ export class Bot {
 
     this.client.on("ready", () => {
       console.log(`${this.client.user!.username} ready!`);
-      client.user!.setActivity(`${this.prefix}help and ${this.prefix}play`, { type: ActivityType.Listening });
+      client.user!.setActivity(`by PancakeHost.com`, { type: ActivityType.Streaming });
     });
 
     this.client.on("warn", (info) => console.log(info));
