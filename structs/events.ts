@@ -77,7 +77,7 @@ export function createEvents(player: Player)
                 },
                 {
                     "name": "\u200B",
-                    "value": `Requested by <@${queue.metadata.message.author.id}>`,
+                    "value": `Requested by <@${song.requestedBy.id}>`,
                     "inline": true
                 }
             ],
