@@ -7,6 +7,6 @@ export default {
   description: "Remove a song from the queue",
   execute(message: Message, args: any[])
   {
-    bot.player.getQueue(message.guild!.id)!.remove(args[0]);
+    bot.player.queues.cache.find((queue) => queue.guild.id === message.guild!.id)?.removeTrack(args[0] - 1);
   }
 };

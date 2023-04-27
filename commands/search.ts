@@ -1,4 +1,4 @@
-import { QueryType, Queue, Track } from "discord-player";
+import { QueryType, Track } from "discord-player";
 import { Message, TextChannel } from "discord.js";
 import { bot } from "../index";
 
@@ -15,7 +15,7 @@ export default {
         const result = await bot.player
             .search(query, {
                 requestedBy: message.author,
-                searchEngine: QueryType.AUTO
+                searchEngine: QueryType.YOUTUBE
             })
             .catch(() =>
             {
@@ -39,32 +39,34 @@ export default {
             }
         }
 
-        let queue = bot.player.getQueue(message.guild!.id);
+        let queue = bot.player.queues.cache.find((queue) => queue.guild.id === message.guild!.id);
         if (queue)
         {
             queue.metadata = {
                 searchData: results,
                 searchAuthor: message.author,
                 channel: message.channel,
-                message: message
+                message: message,
+                requestedBy: message.author
             };
         }
         else
         {
-            queue = bot.player.createQueue(message.guild!, {
+            queue = bot.player.queues.create(message.guild!, {
                 leaveOnEndCooldown: 1000 * 60 * 2,
                 leaveOnEmptyCooldown: 1000 * 60 * 2,
-                ytdlOptions: {
-                    quality: 'highest',
-                    filter: 'audioonly',
-                    highWaterMark: 1 << 25,
-                    dlChunkSize: 0
-                },
+                // ytdlOptions: {
+                //     quality: 'highest',
+                //     filter: 'audioonly',
+                //     highWaterMark: 1 << 25,
+                //     dlChunkSize: 0
+                // },
                 metadata: {
                     searchData: results,
                     searchAuthor: message.author,
                     channel: message.channel,
-                    message: message
+                    message: message,
+                    requestedBy: message.author
                 }
             });
         }
@@ -73,7 +75,7 @@ export default {
         {
             if (!queue.connection) await queue.connect(message.member!.voice!.channel!);
         } catch {
-            void bot.player.deleteQueue(message.guild!.id);
+            bot.player.queues.delete(message.guild!.id);
             message.reply('❌ | Could not join your voice channel!');
         }
 
@@ -98,7 +100,7 @@ export default {
 export function onSearchType(message: Message)
 {
     //Get Queue
-    const queue = bot.player.getQueue(message.guild!.id) as Queue<any>;
+    const queue = bot.player.queues.cache.find((queue) => queue.guild.id === message.guild!.id);
 
     if (!queue)
     {
@@ -106,15 +108,15 @@ export function onSearchType(message: Message)
     }
 
     //Get the search data
-    const searchData = queue.metadata!.searchData;
-    const searchAuthor = queue.metadata!.searchAuthor;
+    const searchData = (queue.metadata as any).searchData;
+    const searchAuthor = (queue.metadata as any).searchAuthor;
     if (!searchData || !searchAuthor)
     {
         return;
     }
 
     //Cancel search?
-    if(message.content === 'cancel' || queue.metadata!.searchAuthor.id !== message.author.id)
+    if (message.content === 'cancel' || (queue.metadata as any).searchAuthor.id !== message.author.id)
     {
         //Reset to default
         queue.metadata =
@@ -147,7 +149,14 @@ export function onSearchType(message: Message)
         //Play the item
         if (item.type === 'video')
         {
-            queue.play(item.track as Track);
+            if (queue.isPlaying())
+            {
+                queue.addTrack(item.track as Track);
+            }
+            else
+            {
+                bot.player.play(message.member!.voice!.channel!, item.track as Track);
+            }
         }
 
         //Reset to default

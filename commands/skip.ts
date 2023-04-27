@@ -6,7 +6,9 @@ export default {
   aliases: ["s"],
   description: "Skip the current song",
   execute(message: Message) {
-    bot.player.getQueue(message.guild!.id)!.skip();
+    bot.player.queues.cache.find((queue) => queue.guild.id === message.guild!.id)!.node.skip();
+
+    //bot.player.queues.get(message.guild!.id)!.tracks.
 
     message.reply("⏭️ Skipped the current song!");
   }

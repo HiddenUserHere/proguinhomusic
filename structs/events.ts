@@ -1,4 +1,4 @@
-import { Playlist, Player, Queue, PlayerEvents, Track } from "discord-player";
+import { Playlist, Player, PlayerEvents, Track } from "discord-player";
 import { bot } from "..";
 
 function zeroPad(nr: number, base: number)
@@ -9,29 +9,29 @@ function zeroPad(nr: number, base: number)
 
 export function createEvents(player: Player)
 {
-    player.on('connectionCreate', (queue) =>
+    player.events.on('connection', (queue: any) =>
     {
-        queue.connection.voiceConnection.on('stateChange', (oldState, newState) =>
-        {
-            const oldNetworking = Reflect.get(oldState, 'networking');
-            const newNetworking = Reflect.get(newState, 'networking');
+        // queue.connection.voiceConnection.on('stateChange', (oldState, newState) =>
+        // {
+        //     const oldNetworking = Reflect.get(oldState, 'networking');
+        //     const newNetworking = Reflect.get(newState, 'networking');
 
-            const networkStateChangeHandler = (oldNetworkState: any, newNetworkState: any) =>
-            {
-                const newUdp = Reflect.get(newNetworkState, 'udp');
-                clearInterval(newUdp?.keepAliveInterval);
-            }
+        //     const networkStateChangeHandler = (oldNetworkState: any, newNetworkState: any) =>
+        //     {
+        //         const newUdp = Reflect.get(newNetworkState, 'udp');
+        //         clearInterval(newUdp?.keepAliveInterval);
+        //     }
 
-            oldNetworking?.off('stateChange', networkStateChangeHandler);
-            newNetworking?.on('stateChange', networkStateChangeHandler);
-        });
+        //     oldNetworking?.off('stateChange', networkStateChangeHandler);
+        //     newNetworking?.on('stateChange', networkStateChangeHandler);
+        // });
     });
-    player.on('channelEmpty', (queue: Queue<any>) =>
+    player.events.on('emptyChannel', (queue: any) =>
         queue.metadata.channel.send(`⚠️ Everyone left the Voice Channel, queue ended.`));
         // Emitted when a song was added to the queue.
-    player.on('trackAdd', (queue: Queue<any>, song: Track) =>
+    player.events.on('audioTrackAdd', (queue: any, song: Track) =>
     {
-        const position = queue.tracks.length;
+        const position = queue.tracks.data.length;
 
         if (position === 0)
             queue.metadata.message.reply(`✅ Song ***${song.title}*** was added to the queue by **${queue.metadata.message.author.username}**.`);
@@ -39,9 +39,9 @@ export function createEvents(player: Player)
             queue.metadata.message.reply(`✅ Song ***${song.title}*** was added to the queue by **${queue.metadata.message.author.username}** at position **#${position}**.`);
     });
         // Emitted when a playlist was added to the queue.
-    player.on('tracksAdd', (queue: Queue<any>, tracks: Track[]) =>
+    player.events.on('audioTracksAdd', (queue: any, tracks: Track[]) =>
     {
-        const position = queue.tracks.length - tracks.length;
+        const position = queue.tracks.data.length - tracks.length;
 
         if (position === 0)
             queue.metadata.message.reply(`✅ Playlist with ${tracks.length} songs was added to the queue by **${queue.metadata.message.author.username}**.`);
@@ -49,10 +49,10 @@ export function createEvents(player: Player)
             queue.metadata.message.reply(`✅ Playlist with ${tracks.length} songs was added to the queue by **${queue.metadata.message.author.username}** at position **#${position}**.`);
     });
         // Emitted when the queue was destroyed (either by ending or stopping).    
-    player.on('queueEnd', (queue: Queue<any>) =>
+    player.events.on('emptyQueue', (queue: any) =>
         queue.metadata.channel.send(`🏁 The queue has ended.`));
         // Emitted when a song changed.
-    player.on('trackStart', (queue: Queue<any>, song: Track) =>
+    player.events.on('playerStart', (queue: any, song: Track) =>
     {
         //Duration of the song in seconds.
         let duration = parseInt(song.duration);
@@ -62,6 +62,8 @@ export function createEvents(player: Player)
 
         //Duration of the song seconds.
         let seconds = zeroPad(Math.floor(duration % 60), 10);
+
+        let requestedBy = song.requestedBy?.id ? `<@${song.requestedBy.id}>` : "Unknown";
 
         //SEND EMBED MESSAGE
         const embed =
@@ -77,7 +79,7 @@ export function createEvents(player: Player)
                 },
                 {
                     "name": "\u200B",
-                    "value": `Requested by <@${song.requestedBy.id}>`,
+                    "value": `Requested by ${requestedBy}`,
                     "inline": true
                 },
                 //Powered by Pancake Host
@@ -96,10 +98,10 @@ export function createEvents(player: Player)
         queue.metadata.channel.send({ embeds: [embed] });
     });
         // Emitted when someone disconnected the bot from the channel.
-    player.on('botDisconnect', (queue: Queue<any>) =>
+    player.events.on('disconnect', (queue: any) =>
         queue.metadata.channel.send(`❗ I was kicked from the Voice Channel, queue ended.`));
         // Emitted when there was an error in runtime
-    player.on('error', (queue: Queue<any>, error) =>
+    player.events.on('error', (queue: any, error) =>
         {
             //queue.metadata.channel.send(`Error: ${error} in ${queue.guild.name}`);
             console.log(`Error: ${error} in ${queue.guild.name}`);

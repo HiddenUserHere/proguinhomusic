@@ -13,7 +13,7 @@ export default {
   description:'Shows the queue',
   execute(message: Message)
   {
-    const queue = bot.player.getQueue(message.guild!.id);
+    const queue = bot.player.queues.get(message.guild!.id);
 
     if (!queue)
     {
@@ -28,10 +28,11 @@ export default {
       color: 0x6E6E6E
     };
    
-    for (let i = 0; i < queue.tracks.length; i++)
+    for (let i = 0; i < queue.tracks.size; i++)
     {
-      const result = queue.tracks[i];
-      embed.description += `**${i + 1}.** [${result.title}](${result.url})\n`;
+      const result = queue.tracks.at(i);
+      if(result)
+        embed.description += `**${i + 1}.** [${result.title}](${result.url})\n`;
     }
 
     (message.channel as TextChannel).send({ embeds: [embed] });

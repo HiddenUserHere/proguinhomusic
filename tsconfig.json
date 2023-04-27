@@ -6,7 +6,7 @@
     "target": "es2022",
     "moduleResolution": "node",
     "resolveJsonModule": true,
-    "useUnknownInCatchVariables": true,
+    "useUnknownInCatchVariables": false,
     "allowUnreachableCode": false,
     "esModuleInterop": true,
     "skipLibCheck": true,

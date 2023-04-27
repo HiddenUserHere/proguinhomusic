@@ -21,6 +21,7 @@ export class Bot {
   {
     this.player = new Player(client, {
       smoothVolume: true,
+      autoRegisterExtractor: false
     });
 
     createEvents(this.player);
@@ -40,6 +41,8 @@ export class Bot {
   }
 
   private async importCommands() {
+    await this.player.extractors.loadDefault();
+
     const commandFiles = readdirSync(join(__dirname, "..", "commands")).filter((file) => !file.endsWith(".map"));
 
     for (const file of commandFiles) {
