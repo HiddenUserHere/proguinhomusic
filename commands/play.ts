@@ -42,9 +42,9 @@ export default {
         requestedBy: message.author,
         searchEngine: QueryType.AUTO
       })
-      .catch(() =>
+      .catch((err) =>
       {
-        console.log('he');
+        console.log(err);
       });
     if (!searchResult || !searchResult.tracks.length) return message.reply('No results were found!');
     
