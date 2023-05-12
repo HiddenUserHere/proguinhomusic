@@ -1,6 +1,7 @@
 import { QueryType } from "discord-player";
 import { Message, PermissionFlagsBits } from "discord.js";
 import { bot } from "../index";
+import { SearchQueryType } from "discord-player";
 
 export default {
   name: "play",
@@ -11,14 +12,27 @@ export default {
   async execute(message: Message, args: string[])
   {
     try{
-    const guild = message.guild!;
-
     //Get all after the command
-    const query = args.join(' ');
+      const query = args.join(' ');
+      
+      let searchEngine: SearchQueryType = QueryType.YOUTUBE;
+      if (query.includes("spotify.com"))
+      {
+        searchEngine = QueryType.SPOTIFY_SONG;
+        if(query.includes("/playlist"))
+        {
+          searchEngine = QueryType.SPOTIFY_PLAYLIST;
+        }
+      }
+      else if (query.includes("soundcloud.com"))
+      {
+        searchEngine = QueryType.SOUNDCLOUD_SEARCH;
+      }
+      
 
 
       await bot.player.play(message.member!.voice!.channel!, query, {
-        searchEngine: QueryType.YOUTUBE,
+        searchEngine: searchEngine,
         nodeOptions: {
           // nodeOptions are the options for guild node (aka your queue in simple word)
           metadata: {
