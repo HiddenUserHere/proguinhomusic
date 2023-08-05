@@ -7,6 +7,21 @@ function zeroPad(nr: number, base: number)
     return len > 0 ? new Array(len).join('0') + nr : nr;
 }
 
+function errorOccured(errorStr: any, channel: any = null)
+{
+    try
+    {
+        if (channel)
+            channel.send(`An error occured, please try again in a few seconds.`);
+
+        console.log(errorStr);
+    }
+    catch (error)
+    {
+        console.log(error);
+    }
+}
+
 export function createEvents(player: Player)
 {
     player.events.on('connection', (queue: any) =>
@@ -27,79 +42,118 @@ export function createEvents(player: Player)
         // });
     });
     player.events.on('emptyChannel', (queue: any) =>
-        queue.metadata.channel.send(`⚠️ Everyone left the Voice Channel, queue ended.`));
-        // Emitted when a song was added to the queue.
+    {
+        try
+        {
+            queue.metadata.channel.send(`⚠️ Everyone left the Voice Channel, queue ended.`);
+        }
+        catch (error)
+        {
+            errorOccured(error, queue.metadata.channel);
+        }
+    });
+    // Emitted when a song was added to the queue.
     player.events.on('audioTrackAdd', (queue: any, song: Track) =>
     {
-        const position = queue.tracks.data.length;
+        try
+        {
+            const position = queue.tracks.data.length;
 
-        if (position === 0)
-            queue.metadata.message.reply(`✅ Song ***${song.title}*** was added to the queue by **${queue.metadata.message.author.username}**.`);
-        else
-            queue.metadata.message.reply(`✅ Song ***${song.title}*** was added to the queue by **${queue.metadata.message.author.username}** at position **#${position}**.`);
+            if (position === 0)
+                queue.metadata.channel.send(`✅ Song ***${song.title}*** was added to the queue by **${queue.metadata.message.author.username}**.`);
+            else
+                queue.metadata.channel.send(`✅ Song ***${song.title}*** was added to the queue by **${queue.metadata.message.author.username}** at position **#${position}**.`);
+        }
+        catch (error)
+        {
+            errorOccured(error, queue.metadata.channel);
+        }
     });
-        // Emitted when a playlist was added to the queue.
+    // Emitted when a playlist was added to the queue.
     player.events.on('audioTracksAdd', (queue: any, tracks: Track[]) =>
     {
-        const position = queue.tracks.data.length - tracks.length;
+        try
+        {
+            const position = queue.tracks.data.length - tracks.length;
 
-        if (position === 0)
-            queue.metadata.message.reply(`✅ Playlist with ${tracks.length} songs was added to the queue by **${queue.metadata.message.author.username}**.`);
-        else
-            queue.metadata.message.reply(`✅ Playlist with ${tracks.length} songs was added to the queue by **${queue.metadata.message.author.username}** at position **#${position}**.`);
+            if (position === 0)
+                queue.metadata.channel.send(`✅ Playlist with ${tracks.length} songs was added to the queue by **${queue.metadata.message.author.username}**.`);
+            else
+                queue.metadata.channel.send(`✅ Playlist with ${tracks.length} songs was added to the queue by **${queue.metadata.message.author.username}** at position **#${position}**.`);
+        }
+        catch (error)
+        {
+            errorOccured(error, queue.metadata.channel);
+        }
     });
-        // Emitted when the queue was destroyed (either by ending or stopping).    
+    // Emitted when the queue was destroyed (either by ending or stopping).    
     player.events.on('emptyQueue', (queue: any) =>
-        queue.metadata.channel.send(`🏁 The queue has ended.`));
-        // Emitted when a song changed.
+    {
+        try
+        {
+            queue.metadata.channel.send(`🏁 The queue has ended.`);
+        }
+        catch (error)
+        {
+            errorOccured(error, queue.metadata.channel);
+        }
+    });
+    // Emitted when a song changed.
     player.events.on('playerStart', (queue: any, song: Track) =>
     {
-        //Duration of the song in seconds.
-        let duration = parseInt(song.duration);
-
-        //Duration of the song in minutes.
-        let minutes = zeroPad(Math.floor(duration / 60), 10);
-
-        //Duration of the song seconds.
-        let seconds = zeroPad(Math.floor(duration % 60), 10);
-
-        let requestedBy = song.requestedBy?.id ? `<@${song.requestedBy.id}>` : "Unknown";
-
-        //SEND EMBED MESSAGE
-        const embed =
+        try
         {
-            "type": "rich",
-            "title": `Now Playing`,
-            "description": "",
-            "color": 0x7b00ff,
-            "fields": [
-                {
-                    "name": "\u200B",
-                    "value": `[${song.title}](${song.url})\n\`Duration: ${song.duration}\``
-                },
-                {
-                    "name": "\u200B",
-                    "value": `Requested by ${requestedBy}`,
-                    "inline": true
-                },
-                //Powered by Pancake Host
-                {
-                    "name": "\u200B",
-                    "value": `Powered by [PancakeHost.com](https://www.pancakehost.com/)`,
-                }
-            ],
-            "thumbnail": {
-                "url": song.thumbnail,
-                "height": 0,
-                "width": 0
-            }
-        };
+            let requestedBy = song.requestedBy?.id ? `<@${song.requestedBy.id}>` : queue.metadata.message.author.username ? `<@${queue.metadata.message.author.id}>` : "Unknown";
 
-        queue.metadata.channel.send({ embeds: [embed] });
+            //SEND EMBED MESSAGE
+            const embed =
+            {
+                "type": "rich",
+                "title": `Now Playing`,
+                "description": "",
+                "color": 0x7b00ff,
+                "fields": [
+                    {
+                        "name": "\u200B",
+                        "value": `[${song.title}](${song.url})\n\`Duration: ${song.duration}\``
+                    },
+                    {
+                        "name": "\u200B",
+                        "value": `Requested by ${requestedBy}`,
+                        "inline": true
+                    },
+                    //Powered by Pancake Host
+                    {
+                        "name": "\u200B",
+                        "value": `Powered by [PancakeHost.com](https://www.pancakehost.com/)`,
+                    }
+                ],
+                "thumbnail": {
+                    "url": song.thumbnail,
+                    "height": 0,
+                    "width": 0
+                }
+            };
+
+            queue.metadata.channel.send({ embeds: [embed] });
+        }
+        catch (error)
+        {
+            errorOccured(error, queue.metadata.channel);
+        }
     });
-        // Emitted when someone disconnected the bot from the channel.
+    // Emitted when someone disconnected the bot from the channel.
     player.events.on('disconnect', (queue: any) =>
-        queue.metadata.channel.send(`❗ I was kicked from the Voice Channel, queue ended.`));
+    {
+        try
+        {
+            queue.metadata.channel.send(`❗ I was kicked from the Voice Channel, queue ended.`);
+        }
+        catch (error)
+        {
+            errorOccured(error, queue.metadata.channel);
+        }
+    });
         // Emitted when there was an error in runtime
     player.events.on('error', (queue: any, error) =>
         {

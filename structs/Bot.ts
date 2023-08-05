@@ -1,5 +1,5 @@
 import { Player } from "discord-player";
-import { ActivityType, Client, Collection, Snowflake } from "discord.js";
+import { ActivityType, ChannelType, Client, Collection, Snowflake, TextChannel } from "discord.js";
 import { readdirSync } from "fs";
 import { join } from "path";
 import { Command } from "../interfaces/Command";
@@ -121,5 +121,61 @@ export class Bot {
         }
       }
     });
+  }
+
+  //Get all last channels from all guilds this bot was sent messages
+  //Get only if bot have sent messages in this channel
+  public async getAllLastChannels() : Promise<TextChannel[]>
+  {
+    let channelList: TextChannel[] = [];
+
+    const servers = this.client.guilds.cache;
+    for (const [, value] of servers)
+    {
+      try
+      {
+        const guild = value;
+
+        let found = false;
+        const channels = guild.channels.cache;
+        for(const [, valueCh] of channels)
+        {
+          if (found)
+            break;
+
+          const channel = valueCh;
+          if (channel.type === ChannelType.GuildText)
+          {
+            try
+            {
+              //Get Last 150 messages from this channel
+              const messages = await channel.messages.fetch({ limit: 100 });
+              for(const [, valueMessage] of messages)
+              {
+                if (found)
+                  break;
+                if (valueMessage.author.id === this.client.user!.id)
+                {
+                  console.log(`Last channel: ${channel.name}`);
+                  channelList.push(channel as any);
+                  found = true;
+                  break;
+                }
+              }
+
+            } catch (e)
+            {
+            }
+          }
+        }
+      }
+      catch (e)
+      {
+      }
+    }
+
+    console.log(`Found ${channelList.length} channels`);
+
+    return channelList;
   }
 }
