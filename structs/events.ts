@@ -1,5 +1,6 @@
 import { Playlist, Player, PlayerEvents, Track } from "discord-player";
 import { bot } from "..";
+import { config } from "../utils/config";
 
 function zeroPad(nr: number, base: number)
 {
@@ -92,6 +93,27 @@ export function createEvents(player: Player)
         try
         {
             queue.metadata.channel.send(`🏁 The queue has ended.`);
+
+            let minutes = Math.floor(config.STAY_TIME / 60);
+            let seconds = config.STAY_TIME % 60;
+
+            let text = '🕒 I will leave the Voice Channel in ';
+            if (minutes > 0)
+            {
+                text += `${minutes} minutes`;
+                if (seconds > 0)
+                {
+                    text += ` and ${seconds} seconds`;
+                }
+            }
+            else
+            {
+                text += `${seconds} seconds`;
+            }
+
+            text += ` if there is no song in the queue.`;
+
+            queue.metadata.channel.send(text);
         }
         catch (error)
         {
@@ -147,7 +169,7 @@ export function createEvents(player: Player)
     {
         try
         {
-            queue.metadata.channel.send(`❗ I was kicked from the Voice Channel, queue ended.`);
+            queue.metadata.channel.send(`❗ Disconnected, queue ended.`);
         }
         catch (error)
         {
