@@ -36,6 +36,8 @@ export default {
         searchEngine: searchEngine,
         nodeOptions: {
           leaveOnEmptyCooldown: config.STAY_TIME * 1000,
+          leaveOnEmpty: true,
+          leaveOnEnd: false,
           // nodeOptions are the options for guild node (aka your queue in simple word)
           metadata: {
             channel: message.channel,
