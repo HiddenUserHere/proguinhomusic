@@ -2,6 +2,7 @@ import { QueryType } from "discord-player";
 import { Message, PermissionFlagsBits } from "discord.js";
 import { bot } from "../index";
 import { SearchQueryType } from "discord-player";
+import { config } from "../utils/config";
 
 export default {
   name: "play",
@@ -34,6 +35,7 @@ export default {
       await bot.player.play(message.member!.voice!.channel!, query, {
         searchEngine: searchEngine,
         nodeOptions: {
+          leaveOnEmptyCooldown: config.STAY_TIME * 1000,
           // nodeOptions are the options for guild node (aka your queue in simple word)
           metadata: {
             channel: message.channel,

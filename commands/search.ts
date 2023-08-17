@@ -1,6 +1,7 @@
 import { QueryType, Track } from "discord-player";
 import { Message, TextChannel } from "discord.js";
 import { bot } from "../index";
+import { config } from "../utils/config";
 
 export default {
     name: "search",
@@ -155,7 +156,17 @@ export function onSearchType(message: Message)
             }
             else
             {
-                bot.player.play(message.member!.voice!.channel!, item.track as Track);
+                bot.player.play(message.member!.voice!.channel!, item.track as Track, {
+                    nodeOptions: {
+                        leaveOnEmptyCooldown: config.STAY_TIME * 1000,
+                        // nodeOptions are the options for guild node (aka your queue in simple word)
+                        metadata: {
+                            channel: message.channel,
+                            message: message,
+                            requestedBy: message.author
+                        }
+                    }
+                });
             }
         }
 
