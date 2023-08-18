@@ -29,6 +29,13 @@ export default {
       {
         searchEngine = QueryType.SOUNDCLOUD_SEARCH;
       }
+      else if (query.includes("youtube.com"))
+      {
+        if (query.includes("/playlist"))
+        {
+          searchEngine = QueryType.YOUTUBE_PLAYLIST;
+        }
+      }
 
       await bot.player.play(message.member!.voice!.channel!, query, {
         searchEngine: searchEngine,
