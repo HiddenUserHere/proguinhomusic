@@ -158,10 +158,10 @@ export function onSearchType(message: Message)
             {
                 bot.player.play(message.member!.voice!.channel!, item.track as Track, {
                     nodeOptions: {
-                        leaveOnEmptyCooldown: config.STAY_TIME * 1000,
-                        leaveOnEmpty: true,
-                        leaveOnEndCooldown: config.STAY_TIME * 1000,
-                        leaveOnEnd: true,
+                        leaveOnEnd: false,
+                        leaveOnStop: true,
+                        leaveOnEmpty: false,
+
                         // nodeOptions are the options for guild node (aka your queue in simple word)
                         metadata: {
                             channel: message.channel,
