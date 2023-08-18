@@ -6,5 +6,8 @@ export default {
   description: "Stop the music and clear the queue",
   execute(message: Message) {
     bot.player.queues.cache.find((queue) => queue.guild.id === message.guild!.id)!.node.stop();
+
+    //Disconnect
+    bot.player.queues.cache.find((queue) => queue.guild.id === message.guild!.id)!.dispatcher?.disconnect();
   }
 };
