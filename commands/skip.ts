@@ -8,8 +8,6 @@ export default {
   execute(message: Message) {
     bot.player.queues.cache.find((queue) => queue.guild.id === message.guild!.id)!.node.skip();
 
-    //bot.player.queues.get(message.guild!.id)!.tracks.
-
     message.reply("⏭️ Skipped the current song!");
   }
 };

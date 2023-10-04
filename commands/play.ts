@@ -14,7 +14,7 @@ export default {
   {
     try{
     //Get all after the command
-      const query = args.join(' ');
+      let query = args.join(' ');
       
       let searchEngine: SearchQueryType = QueryType.YOUTUBE;
       if (query.includes("spotify.com"))
@@ -29,11 +29,25 @@ export default {
       {
         searchEngine = QueryType.SOUNDCLOUD_SEARCH;
       }
-      else if (query.includes("youtube.com"))
+      else if (query.includes("youtube.com") || query.includes("youtu.be"))
       {
         if (query.includes("/playlist") || query.includes("list="))
         {
           searchEngine = QueryType.YOUTUBE_PLAYLIST;
+        }
+
+        //Remove everything after specific characters
+        if (query.includes("&"))
+        {
+          query = query.replace(/&.*/, "");
+        }
+
+        if (query.includes("youtu.be"))
+        {
+          if(query.includes("?"))
+          {
+            query = query.replace(/\?.*/, "");
+          }
         }
       }
 

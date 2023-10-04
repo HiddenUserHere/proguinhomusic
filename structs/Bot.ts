@@ -172,10 +172,51 @@ export class Bot {
       catch (e)
       {
       }
-    }
+    }  
 
     console.log(`Found ${channelList.length} channels`);
 
     return channelList;
+  }
+
+  public async deleteMessage(id: string)
+  {
+    const servers = this.client.guilds.cache;
+    for (const [, value] of servers)
+    {
+      try
+      {
+        const guild = value;
+
+        const channels = guild.channels.cache;
+        for(const [, valueCh] of channels)
+        {
+          const channel = valueCh;
+          if (channel.type === ChannelType.GuildText)
+          {
+            try
+            {
+              //Get Last 150 messages from this channel
+              const messages = await channel.messages.fetch({ limit: 100 });
+              for(const [, valueMessage] of messages)
+              {
+                const message = valueMessage;
+                if (message.id === id)
+                {
+                  message.delete();
+                  return;
+                }
+              }
+
+            } catch (e)
+            {
+            }
+          }
+        }
+      }
+      catch (e)
+      {
+      }
+    }
   }
 }
