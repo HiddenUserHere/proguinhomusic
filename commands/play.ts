@@ -31,6 +31,8 @@ export default {
       }
       else if (query.includes("youtube.com") || query.includes("youtu.be"))
       {
+        searchEngine = QueryType.YOUTUBE_VIDEO;
+
         if (query.includes("/playlist") || query.includes("list="))
         {
           searchEngine = QueryType.YOUTUBE_PLAYLIST;
