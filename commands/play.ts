@@ -33,7 +33,7 @@ export default {
       {
         searchEngine = QueryType.YOUTUBE_VIDEO;
 
-        if (query.includes("/playlist") || query.includes("list="))
+        if (query.includes("/playlist") || (query.includes("list=") && query.includes("watch=")))
         {
           searchEngine = QueryType.YOUTUBE_PLAYLIST;
         }
