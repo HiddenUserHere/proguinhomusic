@@ -12,4 +12,5 @@ export interface Config {
   OPENAI_EMAIL: string;
   OPENAI_PASSWORD: string;
   OPENAI_ACCESS_TOKEN: string;
+  DEBUG: boolean;
 }

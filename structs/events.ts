@@ -181,5 +181,13 @@ export function createEvents(player: Player)
         {
             //queue.metadata.channel.send(`Error: ${error} in ${queue.guild.name}`);
             console.log(`Error: ${error} in ${queue.guild.name}`);
-        });
+    });
+
+    player.events.on('debug', (queue: any, message: string) =>
+    {
+        if (config.DEBUG)
+        {
+            console.log(message);
+        }
+    });
 }

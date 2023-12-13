@@ -20,6 +20,7 @@ try {
     OPENAI_EMAIL: process.env.OPENAI_EMAIL || "",
     OPENAI_PASSWORD: process.env.OPENAI_PASSWORD || "",
     OPENAI_ACCESS_TOKEN: process.env.OPENAI_ACCESS_TOKEN || "",
+    DEBUG: process.env.DEBUG === "true" ? true : false,
   };
 }
 

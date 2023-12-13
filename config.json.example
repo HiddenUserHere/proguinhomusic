@@ -12,4 +12,5 @@
   "OPENAPI_EMAIL": "",
   "OPENAPI_PASSWORD": "",
   "OPENAPI_ACCESS_TOKEN": "",
+  "DEBUG": false
 }

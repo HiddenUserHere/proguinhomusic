@@ -19,11 +19,8 @@ export class Bot {
 
   public constructor(public readonly client: Client)
   {
-    this.player = new Player(client, {
-      smoothVolume: true,
-      autoRegisterExtractor: false
-    });
-
+    this.player = new Player(client, {});
+    
     createEvents(this.player);
 
     this.client.login(config.TOKEN);
