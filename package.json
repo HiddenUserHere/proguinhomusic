@@ -16,7 +16,12 @@
   },
   "scripts": {
     "dev": "nodemon index.ts",
-    "start": "ts-node index.ts",
+    "copy-linux": "touch index.ts && npm run nodemon-linux",
+    "nodemon-linux": "nodemon index.ts && npm run copy-linux",
+    "copy-win": "copy /b index.ts +,, && npm run nodemon-win", 
+    "nodemon-win": "nodemon index.ts && npm run copy-win",
+    "start": "npm run nodemon-linux",
+    "start-win": "npm run nodemon-win",
     "build": "tsc --build",
     "prod": "npm run build && node ./dist/index.js",
     "commit": "cz"
@@ -39,7 +44,7 @@
     "https-proxy-agent": "^5.0.1",
     "lyrics-finder": "^21.7.0",
     "node-fetch": "^2.6.9",
-    "nodemon": "^2.0.21",
+    "nodemon": "^2.0.22",
     "string-progressbar": "^1.0.4",
     "ts-node": "^10.9.1",
     "uuid": "^9.0.0",
