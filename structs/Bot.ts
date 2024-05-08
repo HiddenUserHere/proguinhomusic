@@ -1,10 +1,9 @@
 import {
   ApplicationCommandDataResolvable,
-  ChatInputCommandInteraction,
+  Message,
   Client,
   Collection,
   Events,
-  Interaction,
   REST,
   Routes,
   Snowflake
@@ -19,7 +18,7 @@ import { MissingPermissionsException } from "../utils/MissingPermissionsExceptio
 import { MusicQueue } from "./MusicQueue";
 
 export class Bot {
-  public readonly prefix = "/";
+  public readonly prefix = "+";
   public commands = new Collection<string, Command>();
   public slashCommands = new Array<ApplicationCommandDataResolvable>();
   public slashCommandsMap = new Collection<string, Command>();
@@ -57,46 +56,25 @@ export class Bot {
   }
 
   private async onInteractionCreate() {
-    this.client.on(Events.InteractionCreate, async (interaction: Interaction): Promise<any> => {
-      if (!interaction.isChatInputCommand()) return;
+    this.client.on(Events.MessageCreate, async (message: Message) => {
+      if(message.content.charAt(0) !== this.prefix) return;
 
-      const command = this.slashCommandsMap.get(interaction.commandName);
+      const args = message.content.slice(this.prefix.length).trim().split(/ +/);
+      const commandName = args.shift()!.toLowerCase();
+
+      //Entire input string
+      const input = message.content.slice(this.prefix.length + commandName.length).trim();
+
+      const command = this.slashCommandsMap.get(commandName);
 
       if (!command) return;
 
-      if (!this.cooldowns.has(interaction.commandName)) {
-        this.cooldowns.set(interaction.commandName, new Collection());
-      }
-
-      const now = Date.now();
-      const timestamps = this.cooldowns.get(interaction.commandName)!;
-      const cooldownAmount = (command.cooldown || 1) * 1000;
-
-      const timestamp = timestamps.get(interaction.user.id);
-
-      if (timestamp) {
-        const expirationTime = timestamp + cooldownAmount;
-
-        if (now < expirationTime) {
-          const timeLeft = (expirationTime - now) / 1000;
-          return interaction.reply({
-            content: i18n.__mf("common.cooldownMessage", {
-              time: timeLeft.toFixed(1),
-              name: interaction.commandName
-            }),
-            ephemeral: true
-          });
-        }
-      }
-
-      timestamps.set(interaction.user.id, now);
-      setTimeout(() => timestamps.delete(interaction.user.id), cooldownAmount);
-
+      
       try {
-        const permissionsCheck: PermissionResult = await checkPermissions(command, interaction);
+        const permissionsCheck: PermissionResult = await checkPermissions(command, message);
 
         if (permissionsCheck.result) {
-          command.execute(interaction as ChatInputCommandInteraction);
+          command.execute(message, input.split(" "));
         } else {
           throw new MissingPermissionsException(permissionsCheck.missing);
         }
@@ -104,9 +82,9 @@ export class Bot {
         console.error(error);
 
         if (error.message.includes("permissions")) {
-          interaction.reply({ content: error.toString(), ephemeral: true }).catch(console.error);
+          message.reply({ content: error.toString() }).catch(console.error);
         } else {
-          interaction.reply({ content: i18n.__("common.errorCommand"), ephemeral: true }).catch(console.error);
+          message.reply({ content: i18n.__("common.errorCommand") }).catch(console.error);
         }
       }
     });

@@ -1,4 +1,4 @@
-import { ChatInputCommandInteraction, EmbedBuilder, SlashCommandBuilder } from "discord.js";
+import { Message, EmbedBuilder, SlashCommandBuilder } from "discord.js";
 import { splitBar } from "string-progressbar";
 import { bot } from "../index";
 import { i18n } from "../utils/i18n";
@@ -6,11 +6,11 @@ import { i18n } from "../utils/i18n";
 export default {
   data: new SlashCommandBuilder().setName("nowplaying").setDescription(i18n.__("nowplaying.description")),
   cooldown: 10,
-  execute(interaction: ChatInputCommandInteraction) {
+  execute(interaction: Message) {
     const queue = bot.queues.get(interaction.guild!.id);
 
     if (!queue || !queue.songs.length)
-      return interaction.reply({ content: i18n.__("nowplaying.errorNotQueue"), ephemeral: true }).catch(console.error);
+      return interaction.reply({ content: i18n.__("nowplaying.errorNotQueue") }).catch(console.error);
 
     const song = queue.songs[0];
     const seek = queue.resource.playbackDuration / 1000;

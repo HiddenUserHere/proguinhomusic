@@ -1,6 +1,6 @@
 import { DiscordGatewayAdapterCreator, joinVoiceChannel } from "@discordjs/voice";
 import {
-  ChatInputCommandInteraction,
+  Message,
   EmbedBuilder,
   PermissionsBitField,
   SlashCommandBuilder,
@@ -19,27 +19,22 @@ export default {
     .addStringOption((option) => option.setName("playlist").setDescription("Playlist name or link").setRequired(true)),
   cooldown: 5,
   permissions: [PermissionsBitField.Flags.Connect, PermissionsBitField.Flags.Speak],
-  async execute(interaction: ChatInputCommandInteraction, queryOptionName = "playlist") {
-    let argSongName = interaction.options.getString(queryOptionName);
+  async execute(interaction: Message, args: string[]) {
+    let argSongName = args.join(" ");
 
-    const guildMemer = interaction.guild!.members.cache.get(interaction.user.id);
+    const guildMemer = interaction.guild!.members.cache.get(interaction.author.id);
     const { channel } = guildMemer!.voice;
 
     const queue = bot.queues.get(interaction.guild!.id);
 
     if (!channel)
-      return interaction.reply({ content: i18n.__("playlist.errorNotChannel"), ephemeral: true }).catch(console.error);
+      return interaction.reply({ content: i18n.__("playlist.errorNotChannel") }).catch(console.error);
 
     if (queue && channel.id !== queue.connection.joinConfig.channelId)
-      if (interaction.replied)
-        return interaction
-          .editReply({ content: i18n.__mf("play.errorNotInSameChannel", { user: interaction.client.user!.username }) })
-          .catch(console.error);
-      else
+
         return interaction
           .reply({
-            content: i18n.__mf("play.errorNotInSameChannel", { user: interaction.client.user!.username }),
-            ephemeral: true
+            content: i18n.__mf("play.errorNotInSameChannel", { user: interaction.client.user!.username })
           })
           .catch(console.error);
 
@@ -50,11 +45,8 @@ export default {
     } catch (error) {
       console.error(error);
 
-      if (interaction.replied)
-        return interaction.editReply({ content: i18n.__("playlist.errorNotFoundPlaylist") }).catch(console.error);
-      else
         return interaction
-          .reply({ content: i18n.__("playlist.errorNotFoundPlaylist"), ephemeral: true })
+          .reply({ content: i18n.__("playlist.errorNotFoundPlaylist") })
           .catch(console.error);
     }
 
@@ -87,14 +79,9 @@ export default {
       .setColor("#F8AA2A")
       .setTimestamp();
 
-    if (interaction.replied)
-      return interaction.editReply({
-        content: i18n.__mf("playlist.startedPlaylist", { author: interaction.user.id }),
-        embeds: [playlistEmbed]
-      });
     interaction
       .reply({
-        content: i18n.__mf("playlist.startedPlaylist", { author: interaction.user.id }),
+        content: i18n.__mf("playlist.startedPlaylist", { author: interaction.author.id }),
         embeds: [playlistEmbed]
       })
       .catch(console.error);
