@@ -2,7 +2,7 @@ import {
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
-  ChatInputCommandInteraction,
+  Message,
   EmbedBuilder,
   SlashCommandBuilder
 } from "discord.js";
@@ -10,7 +10,7 @@ import { i18n } from "../utils/i18n";
 
 export default {
   data: new SlashCommandBuilder().setName("invite").setDescription(i18n.__("invite.description")),
-  execute(interaction: ChatInputCommandInteraction) {
+  execute(interaction: Message) {
     const inviteEmbed = new EmbedBuilder().setTitle(i18n.__mf("Invite me to your server!"));
 
     // return interaction with embed and button to invite the bot
